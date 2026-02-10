@@ -1,0 +1,17 @@
+{
+  "name": "kut-backend",
+  "version": "1.0.0",
+  "description": "Backend do KUT",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "cors": "^2.8.5",
+    "body-parser": "^1.20.2",
+    "stripe": "^14.0.0"
+  }
+}
