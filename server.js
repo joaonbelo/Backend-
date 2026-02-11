@@ -6,7 +6,9 @@ import db from "./database.js";
 import routes from "./routes.js";
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: "https://kutofficial-com-931962.hostingersite.com"
+}));
 app.use(bodyParser.json());
 
 // ENV VARS
