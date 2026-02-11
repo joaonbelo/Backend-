@@ -3,6 +3,10 @@ import db from "./database.js";
 
 const router = express.Router();
 
+router.get("/test", (req, res) => {
+  res.json({ message: "Backend está a funcionar!" });
+
+});
 // REGISTO
 router.post("/register", (req, res) => {
   const { email, password, barbershop_name } = req.body;
@@ -35,7 +39,34 @@ router.post("/login", (req, res) => {
     }
   );
 });
+// CHECKOUT SIMPLES STRIPE
+router.post("/create-checkout-session", async (req, res) => {
+    try {
+        const session = await req.app.locals.stripe.checkout.sessions.create({
+            payment_method_types: ["card"],
+            mode: "payment",
+            line_items: [
+                {
+                    price_data: {
+                        currency: "eur",
+                        product_data: {
+                            name: "KUT – Subscrição",
+                        },
+                        unit_amount: 990, // 9,90€
+                    },
+                    quantity: 1,
+                },
+            ],
+            success_url: "https://kutofficial-com-931962.hostingersite.com/sucesso.html",
+            cancel_url: "https://kutofficial-com-931962.hostingersite.com/cancelado.html",
+        });
 
+        res.json({ url: session.url });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Erro ao criar sessão de checkout" });
+    }
+});
 // ESTADO DO PLANO
 router.get("/plan/:userId", (req, res) => {
   const { userId } = req.params;

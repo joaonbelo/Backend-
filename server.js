@@ -13,6 +13,7 @@ app.use(bodyParser.json());
 
 // ENV VARS
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+app.locals.stripe = stripe;
 const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 // ROTAS NORMAIS
