@@ -41,7 +41,61 @@ router.post("/login", (req, res) => {
 });
 // CHECKOUT SIMPLES STRIPE
 router.post("/create-checkout-session", async (req, res) => {
-    try {
+   router.post("/checkout-profissional", async (req, res) => {
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      line_items: [
+        {
+          price_data: {
+            currency: "eur",
+            unit_amount: 1499,
+            recurring: { interval: "month" },
+            product_data: {
+              name: "KUT – Profissional",
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: "https://kut.pt/sucesso",
+      cancel_url: "https://kut.pt/cancelado",
+    });
+
+    res.json({ url: session.url });
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao criar sessão de checkout" });
+  }
+});
+
+router.post("/checkout-empresa", async (req, res) => {
+  try {
+    const session = await stripe.checkout.sessions.create({
+      mode: "subscription",
+      line_items: [
+        {
+          price_data: {
+            currency: "eur",
+            unit_amount: 14999,
+            recurring: { interval: "year" },
+            product_data: {
+              name: "KUT – Empresa",
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      success_url: "https://kut.pt/sucesso",
+      cancel_url: "https://kut.pt/cancelado",
+    });
+
+    res.json({ url: session.url });
+  } catch (error) {
+    res.status(500).json({ error: "Erro ao criar sessão de checkout" });
+  }
+}); 
+
+try {
         const session = await req.app.locals.stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             mode: "payment",
