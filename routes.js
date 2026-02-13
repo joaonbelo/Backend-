@@ -3,10 +3,11 @@ import db from "./database.js";
 
 const router = express.Router();
 
+// TESTE
 router.get("/test", (req, res) => {
   res.json({ message: "Backend está a funcionar!" });
-
 });
+
 // REGISTO
 router.post("/register", (req, res) => {
   const { email, password, barbershop_name } = req.body;
@@ -39,10 +40,12 @@ router.post("/login", (req, res) => {
     }
   );
 });
-// CHECKOUT SIMPLES STRIPE
-router.post("/create-checkout-session", async (req, res) => {
-   router.post("/checkout-profissional", async (req, res) => {
+
+// CHECKOUT PROFISSIONAL
+router.post("/checkout-profissional", async (req, res) => {
   try {
+    const stripe = req.app.locals.stripe;
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       line_items: [
@@ -51,15 +54,13 @@ router.post("/create-checkout-session", async (req, res) => {
             currency: "eur",
             unit_amount: 1499,
             recurring: { interval: "month" },
-            product_data: {
-              name: "KUT – Profissional",
-            },
+            product_data: { name: "KUT – Profissional" }
           },
-          quantity: 1,
-        },
+          quantity: 1
+        }
       ],
       success_url: "https://kut.pt/sucesso",
-      cancel_url: "https://kut.pt/cancelado",
+      cancel_url: "https://kut.pt/cancelado"
     });
 
     res.json({ url: session.url });
@@ -68,8 +69,11 @@ router.post("/create-checkout-session", async (req, res) => {
   }
 });
 
+// CHECKOUT EMPRESA
 router.post("/checkout-empresa", async (req, res) => {
   try {
+    const stripe = req.app.locals.stripe;
+
     const session = await stripe.checkout.sessions.create({
       mode: "subscription",
       line_items: [
@@ -78,49 +82,21 @@ router.post("/checkout-empresa", async (req, res) => {
             currency: "eur",
             unit_amount: 14999,
             recurring: { interval: "year" },
-            product_data: {
-              name: "KUT – Empresa",
-            },
+            product_data: { name: "KUT – Empresa" }
           },
-          quantity: 1,
-        },
+          quantity: 1
+        }
       ],
       success_url: "https://kut.pt/sucesso",
-      cancel_url: "https://kut.pt/cancelado",
+      cancel_url: "https://kut.pt/cancelado"
     });
 
     res.json({ url: session.url });
   } catch (error) {
     res.status(500).json({ error: "Erro ao criar sessão de checkout" });
   }
-}); 
-
-try {
-        const session = await req.app.locals.stripe.checkout.sessions.create({
-            payment_method_types: ["card"],
-            mode: "payment",
-            line_items: [
-                {
-                    price_data: {
-                        currency: "eur",
-                        product_data: {
-                            name: "KUT – Subscrição",
-                        },
-                        unit_amount: 990, // 9,90€
-                    },
-                    quantity: 1,
-                },
-            ],
-            success_url: "https://kutofficial-com-931962.hostingersite.com/sucesso.html",
-            cancel_url: "https://kutofficial-com-931962.hostingersite.com/cancelado.html",
-        });
-
-        res.json({ url: session.url });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: "Erro ao criar sessão de checkout" });
-    }
 });
+
 // ESTADO DO PLANO
 router.get("/plan/:userId", (req, res) => {
   const { userId } = req.params;
